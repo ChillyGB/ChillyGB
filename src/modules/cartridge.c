@@ -23,6 +23,8 @@ uint8_t get_mbc(uint8_t cart_type) {
             return MBC6;
         case 0x22:
             return MBC7;
+        case 0x57:
+            return CHILLYCART;
         case 0xfc:
             return POCKET_CAMERA;
         case 0xfd:
@@ -154,6 +156,7 @@ bool load_game(cartridge *cart, char rom_name[256]) {
     }
     fread(cart->data[0], 0x4000, 1, file);
     uint8_t cart_type = cart->data[0][0x0147];
+    strcpy(cart->menu.path, "./");
 
     cart->mbc = get_mbc(cart_type);
     cart->has_rtc = has_rtc(cart_type);

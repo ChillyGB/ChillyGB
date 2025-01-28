@@ -1,5 +1,7 @@
 #include <string.h>
 #include <stdio.h>
+#include <dirent.h>
+#include <stdlib.h>
 #include "../includes/memory.h"
 #include "../includes/apu.h"
 #include "../includes/cartridge.h"
@@ -11,6 +13,7 @@
 #include "../includes/opcodes.h"
 #include "../includes/camera.h"
 #include "../includes/cheats.h"
+#include "../includes/ui.h"
 
 const uint16_t clock_tac_shift2[] = {0x200, 0x8, 0x20, 0x80};
 
@@ -544,6 +547,140 @@ uint8_t read_pocket_camera(cpu *c, uint16_t addr) {
     }
 }
 
+void write_chillycart(cpu *c, uint16_t addr, uint8_t value) {
+    switch (addr) {
+        case 0x2000 ... 0x3fff:
+            c->cart.bank_select = value & 3;
+            break;
+        case 0xa000:
+            if (value == 0) {
+                char path[256];
+                strcpy(path, c->cart.menu.path);
+                strcat(path, c->cart.menu.data[c->cart.menu.current_page][c->cart.menu.selected_rom]->d_name);
+                if (c->cart.menu.data[c->cart.menu.current_page][c->cart.menu.selected_rom]->d_type == DT_DIR) {
+                    realpath(path, c->cart.menu.path);
+                    strcat(c->cart.menu.path, "/");
+                } else {
+                    load_cartridge(c, path);
+                }
+            }
+            else if (value == 1) {
+                strcat(c->cart.menu.path, "/../");
+                realpath(c->cart.menu.path, c->cart.menu.path);
+                strcat(c->cart.menu.path, "/");
+            }
+            c->cart.menu.selected_rom = 0;
+            printf("path: %s\n", c->cart.menu.path);
+            break;
+        case 0xa001:
+            c->cart.menu.FRAM_Backup = 0;
+            break;
+        case 0xa002:
+            c->cart.menu.pages = 0;
+            int files = 0;
+            c->cart.menu.current_page = value;
+            DIR *d = opendir(c->cart.menu.path);
+            memset(c->cart.menu.file_list, 0x0, 0x1c0);
+            if (d != NULL) {
+                for (int i = 0; i < 256; i++) {
+                    for (int j = 0; j < 14; j++) {
+                        c->cart.menu.data[i][j] = readdir(d);
+                        if (c->cart.menu.data[i][j] != NULL) {
+                            if (c->cart.menu.data[i][j]->d_type == DT_DIR) {
+                                strcat(c->cart.menu.data[i][j]->d_name, "/");
+                            }
+                            files++;
+                        }
+                    }
+                }
+                c->cart.menu.pages = files/14 + 1;
+
+                for (int i = 0; i < 14; i++) {
+                    struct dirent *current_file = c->cart.menu.data[c->cart.menu.current_page][i];
+                    if (current_file != NULL) {
+                        int len = strlen(current_file->d_name);
+                        if (len > 32)
+                            len = 32;
+                        memcpy(&c->cart.menu.file_list[i << 5], &current_file->d_name[0], len);
+                    }
+                }
+                closedir(d);
+            }
+            break;
+        case 0xa003:
+            // Load RTC
+            break;
+        case 0xa004:
+            // Save RTC
+            break;
+
+        case 0xa010:
+            c->cart.menu.year = value;
+            break;
+        case 0xa011:
+            c->cart.menu.month = value;
+            break;
+        case 0xa012:
+            c->cart.menu.day = value;
+            break;
+        case 0xa013:
+            c->cart.menu.hours = value;
+            break;
+        case 0xa014:
+            c->cart.menu.minutes = value;
+            break;
+        case 0xa015:
+            c->cart.menu.seconds = value;
+            break;
+        case 0xa100:
+            c->cart.menu.selected_rom = value;
+            break;
+        default:
+            break;
+    }
+}
+
+uint8_t read_chillycart(cpu *c, uint16_t addr) {
+    switch (addr) {
+        case 0x0000 ... 0x3fff:
+            return c->cart.data[0][addr & 0x3fff];
+        case 0x4000 ... 0x7fff:
+            return c->cart.data[c->cart.bank_select][addr & 0x3fff];
+        case 0xa000:
+            if (c->cart.menu.data[c->cart.menu.current_page][c->cart.menu.selected_rom] == NULL) {
+                return 0xff;
+            }
+            else if (c->cart.menu.data[c->cart.menu.current_page][c->cart.menu.selected_rom]->d_type == DT_DIR) {
+                return 0x1;
+            }
+            else {
+                return 0x0;
+            }
+        case 0xa001:
+            return c->cart.menu.FRAM_Backup;
+        case 0xa002:
+            return c->cart.menu.pages;
+        case 0xa010:
+            return c->cart.menu.year;
+        case 0xa011:
+            return c->cart.menu.month;
+        case 0xa012:
+            return c->cart.menu.day;
+        case 0xa013:
+            return c->cart.menu.hours;
+        case 0xa014:
+            return c->cart.menu.minutes;
+        case 0xa015:
+            return c->cart.menu.seconds;
+        case 0xa100:
+            return c->cart.menu.selected_rom;
+        case 0xb000 ... 0xb1bf:
+            return c->cart.menu.file_list[addr & 0x1ff];
+        default:
+            return 0xff;
+    }
+}
+
 void write_cart(cpu *c, uint16_t addr, uint8_t value) {
     switch (c->cart.mbc) {
         case MBC1:
@@ -568,6 +705,10 @@ void write_cart(cpu *c, uint16_t addr, uint8_t value) {
 
         case POCKET_CAMERA:
             write_pocket_camera(c, addr, value);
+            break;
+
+        case CHILLYCART:
+            write_chillycart(c, addr, value);
             break;
 
         default:
@@ -597,6 +738,9 @@ uint8_t read_cart(cpu *c, uint16_t addr) {
 
         case POCKET_CAMERA:
             return read_pocket_camera(c, addr);
+
+        case CHILLYCART:
+            return read_chillycart(c, addr);
 
         default:
             return read_no_mbc(c, addr);

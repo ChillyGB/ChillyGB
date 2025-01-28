@@ -44,6 +44,23 @@ typedef struct {
 }mbc7_eeprom;
 
 typedef struct {
+    uint8_t FRAM_Backup;
+    uint8_t selected_rom;
+    uint8_t file_list[0x1C0];
+    uint8_t current_page;
+    uint8_t pages;
+    struct dirent *data[256][14];
+    char path[256];
+
+    uint8_t year;
+    uint8_t month;
+    uint8_t day;
+    uint8_t hours;
+    uint8_t minutes;
+    uint8_t seconds;
+}chillycart;
+
+typedef struct {
     uint8_t data[512][0x4000];
 
     uint16_t banks;
@@ -64,6 +81,7 @@ typedef struct {
 
     mbc7_accel accel;
     mbc7_eeprom eeprom;
+    chillycart menu;
 
     rtc_clock rtc;
 }cartridge;
