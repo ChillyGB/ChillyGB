@@ -573,7 +573,7 @@ void write_chillycart(cpu *c, uint16_t addr, uint8_t value) {
             printf("path: %s\n", c->cart.menu.path);
             break;
         case 0xa001:
-            c->cart.menu.FRAM_Backup = 0;
+            c->cart.menu.Save_copy = 0;
             break;
         case 0xa002:
             c->cart.menu.pages = 0;
@@ -607,30 +607,40 @@ void write_chillycart(cpu *c, uint16_t addr, uint8_t value) {
                 closedir(d);
             }
             break;
-        case 0xa003:
-            // Load RTC
-            break;
         case 0xa004:
-            // Save RTC
+            c->cart.menu.year_latched = c->cart.menu.year;
+            c->cart.menu.month_latched = c->cart.menu.month;
+            c->cart.menu.day_latched = c->cart.menu.day;
+            c->cart.menu.hours_latched = c->cart.menu.hours;
+            c->cart.menu.minutes_latched = c->cart.menu.minutes;
+            c->cart.menu.seconds_latched = c->cart.menu.seconds;
+            break;
+        case 0xa005:
+            c->cart.menu.year = c->cart.menu.year_latched;
+            c->cart.menu.month = c->cart.menu.month_latched;
+            c->cart.menu.day = c->cart.menu.day_latched;
+            c->cart.menu.hours = c->cart.menu.hours_latched;
+            c->cart.menu.minutes = c->cart.menu.minutes_latched;
+            c->cart.menu.seconds = c->cart.menu.seconds_latched;
             break;
 
         case 0xa010:
-            c->cart.menu.year = value;
+            c->cart.menu.year_latched = value;
             break;
         case 0xa011:
-            c->cart.menu.month = value;
+            c->cart.menu.month_latched = value;
             break;
         case 0xa012:
-            c->cart.menu.day = value;
+            c->cart.menu.day_latched = value;
             break;
         case 0xa013:
-            c->cart.menu.hours = value;
+            c->cart.menu.hours_latched = value;
             break;
         case 0xa014:
-            c->cart.menu.minutes = value;
+            c->cart.menu.minutes_latched = value;
             break;
         case 0xa015:
-            c->cart.menu.seconds = value;
+            c->cart.menu.seconds_latched = value;
             break;
         case 0xa100:
             c->cart.menu.selected_rom = value;
@@ -657,21 +667,21 @@ uint8_t read_chillycart(cpu *c, uint16_t addr) {
                 return 0x0;
             }
         case 0xa001:
-            return c->cart.menu.FRAM_Backup;
+            return c->cart.menu.Save_copy;
         case 0xa002:
             return c->cart.menu.pages;
         case 0xa010:
-            return c->cart.menu.year;
+            return c->cart.menu.year_latched;
         case 0xa011:
-            return c->cart.menu.month;
+            return c->cart.menu.month_latched;
         case 0xa012:
-            return c->cart.menu.day;
+            return c->cart.menu.day_latched;
         case 0xa013:
-            return c->cart.menu.hours;
+            return c->cart.menu.hours_latched;
         case 0xa014:
-            return c->cart.menu.minutes;
+            return c->cart.menu.minutes_latched;
         case 0xa015:
-            return c->cart.menu.seconds;
+            return c->cart.menu.seconds_latched;
         case 0xa100:
             return c->cart.menu.selected_rom;
         case 0xb000 ... 0xb1bf:

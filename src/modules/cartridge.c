@@ -156,7 +156,6 @@ bool load_game(cartridge *cart, char rom_name[256]) {
     }
     fread(cart->data[0], 0x4000, 1, file);
     uint8_t cart_type = cart->data[0][0x0147];
-    strcpy(cart->menu.path, "./");
 
     cart->mbc = get_mbc(cart_type);
     cart->has_rtc = has_rtc(cart_type);
@@ -187,6 +186,16 @@ bool load_game(cartridge *cart, char rom_name[256]) {
     cart->bank_select = 1;
     cart->bank_select_ram = 0;
     fclose(file);
+
+    if (cart->mbc == CHILLYCART) {
+        strcpy(cart->menu.path, "./");
+        cart->menu.day = 29;
+        cart->menu.month = 1;
+        cart->menu.year = 25;
+        cart->menu.hours = 14;
+        cart->menu.minutes = 33;
+        cart->menu.seconds = 6;
+    }
 
     if (cart->has_battery) {
         FILE *save = fopen(save_name, "r");

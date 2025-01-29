@@ -44,7 +44,7 @@ typedef struct {
 }mbc7_eeprom;
 
 typedef struct {
-    uint8_t FRAM_Backup;
+    uint8_t Save_copy;
     uint8_t selected_rom;
     uint8_t file_list[0x1C0];
     uint8_t current_page;
@@ -58,6 +58,13 @@ typedef struct {
     uint8_t hours;
     uint8_t minutes;
     uint8_t seconds;
+
+    uint8_t year_latched;
+    uint8_t month_latched;
+    uint8_t day_latched;
+    uint8_t hours_latched;
+    uint8_t minutes_latched;
+    uint8_t seconds_latched;
 }chillycart;
 
 typedef struct {

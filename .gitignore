@@ -10,6 +10,5 @@ Roms
 build-linux
 build-nx
 cmake-build-switch
-build-linux
-cmake-build-switch
+.cache
 emsdk
