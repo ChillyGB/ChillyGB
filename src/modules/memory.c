@@ -1147,6 +1147,10 @@ void set_mem(cpu *c, uint16_t addr, uint8_t value) {
                     c->is_halted = true;
                     c->gdma_halt = true;
                 }
+                #ifndef NDEBUG
+                printf("DEBUG: EMULATOR: %s started: ", c->hdma.mode ? "HDMA" : "GDMA");
+                printf("$%04X -> $%04X BANK%i\n", (c->hdma.source & 0xfff0), ((c->hdma.destination & 0x1ff0) | 0x8000), video.vram_bank);
+                #endif
             }
             break;
 

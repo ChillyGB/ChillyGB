@@ -244,5 +244,55 @@ bool load_game(cartridge *cart, char rom_name[256]) {
             fclose(save);
         }
     }
+    #ifndef NDEBUG
+    printf("DEBUG: EMULATOR: Loaded game: %s\nDEBUG:    > MBC:       ", rom_name);
+    switch (cart->mbc) {
+        case NO_MBC:
+            printf("None\n");
+            break;
+        case MBC1:
+            printf("MBC1\n");
+            break;
+        case MBC2:
+            printf("MBC2\n");
+            break;
+        case MBC3:
+            printf("MBC3\n");
+            break;
+        case MBC5:
+            printf("MBC5\n");
+            break;
+        case MBC6:
+            printf("MBC6\n");
+            break;
+        case MBC7:
+            printf("MBC7\n");
+            break;
+        case POCKET_CAMERA:
+            printf("Camera\n");
+            break;
+        case MMM01:
+            printf("MMM01\n");
+            break;
+        case CHILLYCART:
+            printf("ChillyCart\n");
+            break;
+        case TAMA5:
+            printf("TAMA5\n");
+            break;
+        case HuC1:
+            printf("HuC1\n");
+            break;
+        case HuC3:
+            printf("HuC3\n");
+            break;
+    }
+    printf("DEBUG:    > ROM size:  %iKB\n", cart->banks*16);
+    if (cart->banks_ram != 0)
+        printf("DEBUG:    > RAM size:  %iKB %s battery\n", cart->banks_ram*8, cart->has_battery ? "with" : "without");
+    else
+        printf("DEBUG:    > RAM size:  None\n");
+
+    #endif
     return true;
 }

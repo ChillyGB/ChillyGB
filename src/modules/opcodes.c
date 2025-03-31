@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "../includes/cpu.h"
 #include "../includes/memory.h"
 #include "../includes/apu.h"
@@ -1392,6 +1393,9 @@ uint8_t stop(cpu *c, parameters *p) {
         c->armed = false;
         timer1.t_states = 0;
         c->double_speed = (c->double_speed) ? false : true;
+        #ifndef NDEBUG
+        printf("DEBUG: EMULATOR: Speed switch to %iMHz\n", c->double_speed ? 8 : 4);
+        #endif
     }
     c->pc += 1;
     return 4;
