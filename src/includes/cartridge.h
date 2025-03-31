@@ -19,7 +19,8 @@ enum mbcs {
     TAMA5,
     HuC3,
     HuC1,
-    CHILLYCART
+    CHILLYCART,
+    UNKNOWN_MAPPER
 };
 
 #endif //CHILLYGB_CARTRIDGE_H

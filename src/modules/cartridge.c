@@ -263,7 +263,7 @@ bool load_game(cartridge *cart, char rom_name[256]) {
             printf("MBC5\n");
             break;
         case MBC6:
-            printf("MBC6\n");
+            printf("MBC6 (Not implemented)\n");
             break;
         case MBC7:
             printf("MBC7\n");
@@ -272,19 +272,22 @@ bool load_game(cartridge *cart, char rom_name[256]) {
             printf("Camera\n");
             break;
         case MMM01:
-            printf("MMM01\n");
+            printf("MMM01 (Not implemented)\n");
             break;
         case CHILLYCART:
             printf("ChillyCart\n");
             break;
         case TAMA5:
-            printf("TAMA5\n");
+            printf("TAMA5 (Not implemented)\n");
             break;
         case HuC1:
-            printf("HuC1\n");
+            printf("HuC1 (Not implemented)\n");
             break;
         case HuC3:
-            printf("HuC3\n");
+            printf("HuC3 (Not implemented)\n");
+            break;
+        case UNKNOWN_MAPPER:
+            printf("Unknown (Using MBC3 instead)\n");
             break;
     }
     printf("DEBUG:    > ROM size:  %iKB\n", cart->banks*16);

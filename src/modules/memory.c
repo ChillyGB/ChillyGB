@@ -721,6 +721,10 @@ void write_cart(cpu *c, uint16_t addr, uint8_t value) {
             write_chillycart(c, addr, value);
             break;
 
+        case UNKNOWN_MAPPER:
+            write_mbc3(c, addr, value);
+            break;
+
         default:
             break;
     }
@@ -751,6 +755,9 @@ uint8_t read_cart(cpu *c, uint16_t addr) {
 
         case CHILLYCART:
             return read_chillycart(c, addr);
+
+        case UNKNOWN_MAPPER:
+            return read_mbc3(c, addr);
 
         default:
             return read_no_mbc(c, addr);
