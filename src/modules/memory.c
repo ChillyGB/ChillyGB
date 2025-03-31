@@ -276,9 +276,7 @@ void write_mbc5(cpu *c, uint16_t addr, uint8_t value) {
             break;
         case 0x4000 ... 0x5fff:
             if (c->cart.has_ram) {
-                if ((value >= 0 && value < 16) && value <= c->cart.banks_ram) {
-                    c->cart.bank_select_ram = value;
-                }
+                c->cart.bank_select_ram = value & (c->cart.banks_ram-1);
             }
             break;
         case 0xa000 ... 0xbfff:
