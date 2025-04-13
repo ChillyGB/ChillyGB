@@ -51,6 +51,7 @@ typedef struct {
     uint8_t pages;
     struct dirent *data[256][14];
     char path[256];
+    char firmware_version[20];
 
     uint8_t year;
     uint8_t month;

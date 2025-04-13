@@ -189,6 +189,7 @@ bool load_game(cartridge *cart, char rom_name[256]) {
 
     if (cart->mbc == CHILLYCART) {
         strcpy(cart->menu.path, "./");
+        strcpy(cart->menu.firmware_version, "   ChillyCart-EMU");
         cart->menu.day = 29;
         cart->menu.month = 1;
         cart->menu.year = 25;

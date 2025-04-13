@@ -682,6 +682,8 @@ uint8_t read_chillycart(cpu *c, uint16_t addr) {
             return c->cart.menu.seconds_latched;
         case 0xa100:
             return c->cart.menu.selected_rom;
+        case 0xa200 ... 0xa213:
+            return c->cart.menu.firmware_version[addr & 0x1f];
         case 0xb000 ... 0xb1bf:
             return c->cart.menu.file_list[addr & 0x1ff];
         default:
