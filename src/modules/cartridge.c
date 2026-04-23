@@ -198,12 +198,12 @@ bool load_game(cartridge *cart, char rom_name[256]) {
         cart->menu.seconds = 6;
     }
 
+	if (cart->mbc == POCKET_CAMERA) {
+		initialize_camera();
+	}
     if (cart->has_battery) {
         FILE *save = fopen(save_name, "r");
         if (save != NULL) {
-            if (cart->mbc == POCKET_CAMERA) {
-                initialize_camera();
-            }
             if (cart->banks_ram == 1)
                 fread(cart->ram, 0x2000, 1, save);
             else if (cart->banks_ram == 4)
